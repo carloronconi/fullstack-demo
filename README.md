@@ -56,6 +56,14 @@ rm apps/\*/pnpm-lock.yaml
 pnpm install
 ```
 
+5. Installed nest CLI as dev dependency
+
+The CLI is the best tool to continue building the scaffolding for other modules, consistently with the framework.
+
+```bash
+pnpm add -g @nestjs/cli
+```
+
 ## ⚙️ Dev scripts
 
 Added to root package.json:
