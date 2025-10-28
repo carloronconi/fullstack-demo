@@ -14,9 +14,14 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('api/hello', () => {
+    it('should return message payload', () => {
+      const response = appController.getHello();
+      expect(response).toHaveProperty(
+        'message',
+        'Hello from the NestJS backend!',
+      );
+      expect(response).toHaveProperty('timestamp');
     });
   });
 });
