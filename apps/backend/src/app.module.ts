@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dataSource from './database/typeorm.datasource';
@@ -21,7 +19,5 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     TypeOrmModule.forRoot(typeOrmOptions),
     GreetingsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

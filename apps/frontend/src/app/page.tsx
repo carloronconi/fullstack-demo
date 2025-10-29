@@ -1,4 +1,4 @@
-import { BackendMessage } from "./backend-message";
+import { GreetingsDashboard } from "./greetings-dashboard";
 import Image from "next/image";
 
 export default function Home() {
@@ -21,19 +21,20 @@ export default function Home() {
             Next.js frontend + NestJS backend
           </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            The component below fetches data from the NestJS server when the
-            page loads and displays the message it receives.
+            Use the dashboard below to exercise the NestJS greetings API — list
+            greetings, create new ones, look them up, and delete them again.
           </p>
         </header>
 
-        <BackendMessage />
+        <GreetingsDashboard />
 
         <section className="text-sm text-zinc-500 dark:text-zinc-400">
           <p>
             Run <code>pnpm dev:all</code> from the repository root to start both
             apps. The frontend expects the backend at{" "}
             <code>http://localhost:3001</code>; change{" "}
-            <code>NEXT_PUBLIC_API_URL</code> if needed.
+            <code>NEXT_PUBLIC_API_URL</code> and{" "}
+            <code>NEXT_PUBLIC_API_KEY</code> if needed.
           </p>
         </section>
       </div>
