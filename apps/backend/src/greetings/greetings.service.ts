@@ -1,44 +1,86 @@
 import { Injectable } from '@nestjs/common';
-import { CountryCode, Greeting } from './entity/greeting.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectId } from 'mongodb';
+import { MongoRepository } from 'typeorm';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
-import { DEFAULT_GREETINGS } from './constants/greetings';
+import {
+  CountryCode,
+  Greeting,
+  GreetingEntity,
+} from './entity/greeting.entity';
 
 @Injectable()
 export class GreetingsService {
-  private greetings: Map<number, Greeting> = new Map(DEFAULT_GREETINGS);
-  private nextId = 5;
+  constructor(
+    @InjectRepository(GreetingEntity)
+    private readonly greetingsRepository: MongoRepository<GreetingEntity>,
+  ) {}
 
-  findAll(sort: 'asc' | 'desc' = 'asc'): Greeting[] {
-    return [...this.greetings.values()].sort((a, b) => {
-      if (sort === 'asc') {
-        return a.createdAt.getTime() - b.createdAt.getTime();
-      } else {
-        return b.createdAt.getTime() - a.createdAt.getTime();
-      }
+  async findAll(sort: 'asc' | 'desc' = 'asc'): Promise<Greeting[]> {
+    const greetings = await this.greetingsRepository.find({
+      order: { createdAt: sort === 'asc' ? 'ASC' : 'DESC' },
     });
+    return greetings.map(this.toGreeting);
   }
 
-  findById(id: number): Greeting | undefined {
-    return this.greetings.get(id);
+  async findById(id: string): Promise<Greeting | null> {
+    const objectId = this.toObjectId(id);
+    if (!objectId) {
+      return null;
+    }
+
+    const greeting = await this.greetingsRepository.findOne({
+      where: { _id: objectId },
+    });
+
+    return greeting ? this.toGreeting(greeting) : null;
   }
 
-  findByCountry(countryCode: CountryCode): Greeting[] {
-    return [...this.greetings.values()].filter(
-      (greeting) => greeting.countryCode === countryCode,
-    );
+  async findByCountry(countryCode: CountryCode): Promise<Greeting[]> {
+    const greetings = await this.greetingsRepository.find({
+      where: { countryCode },
+      order: { createdAt: 'DESC' },
+    });
+
+    return greetings.map(this.toGreeting);
   }
 
-  create({ content, countryCode }: CreateGreetingDto): Greeting {
-    const newGreeting = {
+  async create({ content, countryCode }: CreateGreetingDto): Promise<string> {
+    const entity = this.greetingsRepository.create({
       content,
       countryCode,
       createdAt: new Date(),
-    };
-    this.greetings.set(this.nextId++, newGreeting);
-    return newGreeting;
+    });
+
+    const { insertedId } = await this.greetingsRepository.insertOne(entity);
+
+    return insertedId.toHexString();
   }
 
-  delete(id: number): boolean {
-    return this.greetings.delete(id);
+  async delete(id: string): Promise<boolean> {
+    const objectId = this.toObjectId(id);
+    if (!objectId) {
+      return false;
+    }
+
+    const result = await this.greetingsRepository.deleteOne({
+      _id: objectId,
+    });
+
+    return result.deletedCount === 1;
+  }
+
+  private toGreeting = (entity: GreetingEntity): Greeting => ({
+    id: entity._id.toHexString(),
+    content: entity.content,
+    countryCode: entity.countryCode,
+    createdAt: entity.createdAt,
+  });
+
+  private toObjectId(id: string): ObjectId | null {
+    if (!ObjectId.isValid(id)) {
+      return null;
+    }
+    return new ObjectId(id);
   }
 }

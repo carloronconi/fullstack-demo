@@ -23,17 +23,26 @@ describe('GreetingsController', () => {
     controller = module.get<GreetingsController>(GreetingsController);
   });
 
+  afterEach(() => {
+    Object.values(mockGreetingsService).forEach((mockFn) => mockFn.mockReset());
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should return all greetings', () => {
+  it('should return all greetings', async () => {
     const result = [
-      { content: 'Hello', countryCode: 'US', createdAt: new Date() },
+      {
+        id: '507f1f77bcf86cd799439011',
+        content: 'Hello',
+        countryCode: 'US',
+        createdAt: new Date(),
+      },
     ];
-    mockGreetingsService.findAll.mockReturnValue(result);
+    mockGreetingsService.findAll.mockResolvedValue(result);
 
-    expect(controller.findAll('asc')).toBe(result);
+    await expect(controller.findAll('asc')).resolves.toBe(result);
     expect(mockGreetingsService.findAll).toHaveBeenCalledWith('asc');
   });
 });

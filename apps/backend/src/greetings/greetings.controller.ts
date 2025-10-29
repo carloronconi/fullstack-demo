@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { GreetingsService } from './greetings.service';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
-import { IsPositivePipe } from './pipes/is-positive-pipe';
 import { ApiKey } from './guards/api-key.guard';
+import { ParseObjectIdPipe } from './pipes/parse-object-id.pipe';
 
 @Controller('greetings')
 export class GreetingsController {
@@ -26,8 +26,8 @@ export class GreetingsController {
   }
 
   @Get(':id')
-  findById(@Param('id', IsPositivePipe) id: number) {
-    const greeting = this.greetingsService.findById(id);
+  async findById(@Param('id', ParseObjectIdPipe) id: string) {
+    const greeting = await this.greetingsService.findById(id);
     if (!greeting)
       throw new HttpException('Greeting not found', HttpStatus.NOT_FOUND);
     return greeting;
@@ -44,8 +44,8 @@ export class GreetingsController {
 
   @UseGuards(ApiKey)
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    const success = this.greetingsService.delete(id);
+  async delete(@Param('id', ParseObjectIdPipe) id: string) {
+    const success = await this.greetingsService.delete(id);
     if (!success)
       throw new HttpException('Greeting not found', HttpStatus.NOT_FOUND);
     return true;
