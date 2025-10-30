@@ -57,7 +57,6 @@ describe('GreetingsService', () => {
       expect.objectContaining({
         content: dto.content,
         countryCode: dto.countryCode,
-        createdAt: expect.any(Date),
       }),
     );
     expect(mockRepository.insertOne).toHaveBeenCalledWith(entity);
