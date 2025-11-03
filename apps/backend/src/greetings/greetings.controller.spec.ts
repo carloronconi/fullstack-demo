@@ -37,7 +37,7 @@ describe('GreetingsController', () => {
         id: '507f1f77bcf86cd799439011',
         content: 'Hello',
         countryCode: 'US',
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       },
     ];
     mockGreetingsService.findAll.mockResolvedValue(result);

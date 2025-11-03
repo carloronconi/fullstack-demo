@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
-import { CreateGreetingDto } from './dto/create-greeting.dto';
 import {
-  CountryCode,
-  Greeting,
-  GreetingEntity,
-} from './entity/greeting.entity';
+  type CountryCode,
+  type Greeting,
+} from '@fullstack-demo/contracts/greetings';
+import { CreateGreetingDto } from './dto/create-greeting.dto';
+import { GreetingEntity } from './entity/greeting.entity';
 
 @Injectable()
 export class GreetingsService {

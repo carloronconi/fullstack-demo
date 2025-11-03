@@ -1,17 +1,14 @@
 "use client";
 
+import {
+  COUNTRY_CODES,
+  type CountryCode,
+  type CreateGreetingPayload,
+  type Greeting,
+} from "@fullstack-demo/contracts/greetings";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
-type Greeting = {
-  id: string;
-  content: string;
-  countryCode: string;
-  createdAt: string;
-};
-
 type SortOrder = "asc" | "desc";
-
-const COUNTRY_CODES = ["US", "ES", "FR", "DE"] as const;
 
 const DEFAULT_API_URL = "http://localhost:3001";
 const apiBase =
@@ -34,9 +31,9 @@ export function GreetingsDashboard() {
   } | null>(null);
 
   const [content, setContent] = useState("");
-  const [countryCode, setCountryCode] = useState<
-    (typeof COUNTRY_CODES)[number]
-  >(COUNTRY_CODES[0]);
+  const [countryCode, setCountryCode] = useState<CountryCode>(
+    COUNTRY_CODES[0]
+  );
   const [createError, setCreateError] = useState<string | null>(null);
   const [createStatus, setCreateStatus] = useState<"idle" | "submitting">(
     "idle"
@@ -146,16 +143,17 @@ export function GreetingsDashboard() {
       setFlashMessage(null);
       setCreateStatus("submitting");
       try {
+        const payload: CreateGreetingPayload = {
+          content: content.trim(),
+          countryCode,
+        };
         const res = await fetch(greetingsEndpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-API-KEY": API_KEY,
           },
-          body: JSON.stringify({
-            content: content.trim(),
-            countryCode,
-          }),
+          body: JSON.stringify(payload),
         });
 
         if (res.status === 403) {
@@ -307,7 +305,7 @@ export function GreetingsDashboard() {
                 value={countryCode}
                 onChange={(event) =>
                   setCountryCode(
-                    event.target.value as (typeof COUNTRY_CODES)[number]
+                    event.target.value as CountryCode
                   )
                 }
               >

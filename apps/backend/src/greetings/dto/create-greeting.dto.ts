@@ -1,4 +1,7 @@
-import { COUNTRY_CODES, type CountryCode } from '../entity/greeting.entity';
+import {
+  COUNTRY_CODES,
+  type CountryCode,
+} from '@fullstack-demo/contracts/greetings';
 import { IsIn, IsString } from 'class-validator';
 
 export class CreateGreetingDto {

@@ -1,5 +1,5 @@
-import { GreetingsDashboard } from "./greetings-dashboard";
 import Image from "next/image";
+import { GreetingsDashboard } from "./greetings-dashboard";
 
 export default function Home() {
   return (

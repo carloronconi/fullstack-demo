@@ -1,16 +1,6 @@
+import { type CountryCode } from '@fullstack-demo/contracts/greetings';
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
-
-export const COUNTRY_CODES = ['US', 'ES', 'FR', 'DE'] as const;
-
-export type CountryCode = (typeof COUNTRY_CODES)[number];
-
-export type Greeting = {
-  id: string;
-  content: string;
-  countryCode: CountryCode;
-  createdAt: Date;
-};
 
 @Entity({ name: 'greetings' })
 export class GreetingEntity {
