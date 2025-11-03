@@ -1,8 +1,8 @@
 import { Greeting } from "@fullstack-demo/contracts";
-import { SparklesIcon, Stack } from "@fullstack-demo/design-system";
-import GreetingPreview from "./components/greeting-preview";
-import PaginatedList from "./components/paginated-list";
 import { getBackendOrigin } from "@/lib/get-backend-origin";
+import { Stack } from "@fullstack-demo/design-system";
+import PaginatedList from "./components/paginated-list";
+import ServerGreetingsPreview from "./components/server-greetings-preview";
 
 export default async function GreetingsPage() {
   const backendOrigin = getBackendOrigin();
@@ -20,29 +20,13 @@ export default async function GreetingsPage() {
     }));
   });
 
-  const hasGreetings = greetings.length > 0;
-
   return (
-    <PaginatedList
-      title="All greetings"
-      description="Synced directly from the NestJS backend."
-    >
-      {hasGreetings ? (
-        greetings.map((greeting) => (
-          <GreetingPreview key={greeting.id} {...greeting} />
-        ))
-      ) : (
-        <Stack
-          gap="sm"
-          align="center"
-          className="w-full rounded-md border border-dashed border-border/60 bg-surface-soft px-6 py-10 text-center"
-        >
-          <SparklesIcon className="h-6 w-6 text-primary" />
-          <p className="text-sm text-muted">
-            No greetings yet. Use the dashboard to create the first message.
-          </p>
-        </Stack>
-      )}
-    </PaginatedList>
+    <Stack gap="xl">
+      <ServerGreetingsPreview greetings={greetings} />
+      <PaginatedList
+        title="All greetings"
+        description="Browse the full list from the NestJS backend with client-side pagination."
+      />
+    </Stack>
   );
 }

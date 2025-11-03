@@ -7,7 +7,7 @@ type Props = {
   createdAt: Date;
 };
 
-export default function GreetingPreview({
+export default function GreetingCard({
   content,
   id,
   countryCode,
