@@ -10,3 +10,4 @@ export * from "./select.js";
 export * from "./skeleton.js";
 export * from "./stack.js";
 export * from "./textarea.js";
+export * from "./stat-box.js";

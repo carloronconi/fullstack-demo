@@ -3,7 +3,7 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cn } from "../lib/cn.js";
 
 const baseStyles =
-  "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] border border-transparent font-medium tracking-[0.01em] transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-60";
+  "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] border border-transparent font-medium tracking-[0.01em] transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 const sizeStyles = {
   xs: "h-8 px-3 text-xs",
@@ -75,8 +75,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       ...props
     },
-    ref,
+    ref
   ) => {
+    const resolvedDisabled = disabled ?? loading;
+
     return (
       <button
         ref={ref}
@@ -85,9 +87,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           sizeStyles[size],
           variantStyles[variant],
           loading && "cursor-progress",
-          className,
+          className
         )}
-        disabled={disabled ?? loading}
+        disabled={resolvedDisabled}
         {...props}
       >
         {loading ? (
@@ -97,14 +99,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         ) : (
           <>
-            {leadingIcon && <span className="flex items-center">{leadingIcon}</span>}
+            {leadingIcon && (
+              <span className="flex items-center">{leadingIcon}</span>
+            )}
             {children && <span>{children}</span>}
-            {trailingIcon && <span className="flex items-center">{trailingIcon}</span>}
+            {trailingIcon && (
+              <span className="flex items-center">{trailingIcon}</span>
+            )}
           </>
         )}
       </button>
     );
-  },
+  }
 );
 
 Button.displayName = "Button";

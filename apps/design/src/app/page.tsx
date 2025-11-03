@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 
 import {
+  AlertTriangleIcon,
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
   Badge,
   Button,
   Card,
@@ -9,13 +14,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  CheckIcon,
+  CloseIcon,
   Divider,
   Field,
   HelperText,
+  InfoCircleIcon,
   Input,
+  SearchIcon,
   Select,
   Skeleton,
   Stack,
+  SparklesIcon,
+  StatBox,
   Textarea,
 } from "@fullstack-demo/design-system";
 
@@ -28,6 +39,18 @@ const buttonVariants = [
 ] as const;
 const buttonSizes = ["xs", "sm", "md", "lg", "xl"] as const;
 const countryOptions = ["US", "IT", "DE", "JP", "BR"];
+const iconShowcase = [
+  { name: "Sparkles", Icon: SparklesIcon },
+  { name: "Arrow Right", Icon: ArrowRightIcon },
+  { name: "Arrow Left", Icon: ArrowLeftIcon },
+  { name: "Arrow Up", Icon: ArrowUpIcon },
+  { name: "Arrow Down", Icon: ArrowDownIcon },
+  { name: "Check", Icon: CheckIcon },
+  { name: "Close", Icon: CloseIcon },
+  { name: "Search", Icon: SearchIcon },
+  { name: "Info Circle", Icon: InfoCircleIcon },
+  { name: "Alert Triangle", Icon: AlertTriangleIcon },
+] as const;
 
 export default function DesignShowcasePage() {
   return (
@@ -83,6 +106,9 @@ export default function DesignShowcasePage() {
                 <Button loading variant="primary">
                   Loading…
                 </Button>
+                <Button variant="outline" disabled>
+                  Disabled state
+                </Button>
               </Stack>
             </Stack>
           </ShowcaseSection>
@@ -110,6 +136,27 @@ export default function DesignShowcasePage() {
               <Badge tone="danger" variant="soft">
                 Risk
               </Badge>
+            </Stack>
+          </ShowcaseSection>
+
+          <ShowcaseSection
+            title="Icons"
+            description="Common glyphs for actions and status indicators."
+          >
+            <Stack direction="row-wrap" gap="md">
+              {iconShowcase.map(({ name, Icon }) => (
+                <div
+                  key={name}
+                  className="flex min-w-32 items-center gap-3 rounded-(--radius-sm) border border-border/60 bg-surface px-4 py-3"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-soft">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {name}
+                  </span>
+                </div>
+              ))}
             </Stack>
           </ShowcaseSection>
 
@@ -249,63 +296,3 @@ function ShowcaseSection({
     </Card>
   );
 }
-
-function StatBox({
-  label,
-  value,
-  tone = "neutral",
-}: {
-  label: string;
-  value: string;
-  tone?: "neutral" | "danger";
-}) {
-  const toneClass =
-    tone === "danger"
-      ? "bg-danger/10 text-danger"
-      : "bg-surface-soft text-foreground";
-
-  return (
-    <div
-      className={`flex min-w-40 flex-col gap-1 rounded-(--radius-sm) px-4 py-3 ${toneClass}`}
-    >
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-        {label}
-      </span>
-      <span className="text-2xl font-semibold tracking-tight">{value}</span>
-    </div>
-  );
-}
-
-const SparklesIcon = () => (
-  <svg
-    aria-hidden
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    className="h-4 w-4"
-  >
-    <path
-      d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg
-    aria-hidden
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    className="h-4 w-4"
-  >
-    <path
-      d="M5 12h14m-6-6 6 6-6 6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
