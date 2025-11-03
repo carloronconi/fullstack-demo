@@ -4,3 +4,7 @@ packages:
 
 ignoredBuiltDependencies:
   - '@nestjs/core'
+
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver

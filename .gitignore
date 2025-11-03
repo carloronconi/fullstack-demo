@@ -63,7 +63,7 @@ pids
 
 # Typescript
 *.tsbuildinfo
-apps/frontend/next-env.d.ts
+next-env.d.ts
 
 # Deployment
 .vercel
