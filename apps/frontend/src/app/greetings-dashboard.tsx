@@ -7,14 +7,42 @@ import {
   type Greeting,
 } from "@fullstack-demo/contracts/greetings";
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import {
+  AlertTriangleIcon,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CheckIcon,
+  Divider,
+  Field,
+  HelperText,
+  Input,
+  Select,
+  Skeleton,
+  SparklesIcon,
+  Stack,
+  SearchIcon,
+  cn,
+} from "@fullstack-demo/design-system";
+import { getBackendOrigin } from "@/lib/get-backend-origin";
 
 type SortOrder = "asc" | "desc";
 
-const DEFAULT_API_URL = "http://localhost:3001";
-const apiBase =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? DEFAULT_API_URL;
-const API_BASE = apiBase;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "my-secret-key";
+const BACKEND_ORIGIN = getBackendOrigin();
+
+const dateTimeFormatter = new Intl.DateTimeFormat("en", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+const formatTimestamp = (value: string | Date) =>
+  dateTimeFormatter.format(typeof value === "string" ? new Date(value) : value);
 
 export function GreetingsDashboard() {
   const [greetings, setGreetings] = useState<Greeting[]>([]);
@@ -31,9 +59,7 @@ export function GreetingsDashboard() {
   } | null>(null);
 
   const [content, setContent] = useState("");
-  const [countryCode, setCountryCode] = useState<CountryCode>(
-    COUNTRY_CODES[0]
-  );
+  const [countryCode, setCountryCode] = useState<CountryCode>(COUNTRY_CODES[0]);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createStatus, setCreateStatus] = useState<"idle" | "submitting">(
     "idle"
@@ -48,7 +74,7 @@ export function GreetingsDashboard() {
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const greetingsEndpoint = `${API_BASE}/greetings`;
+  const greetingsEndpoint = `${BACKEND_ORIGIN}/greetings`;
 
   const fetchGreetings = useCallback(
     async (order: SortOrder) => {
@@ -247,234 +273,327 @@ export function GreetingsDashboard() {
   const hasGreetings = greetings.length > 0;
 
   return (
-    <div className="w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
-      <div className="flex flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Greetings playground
-          </h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Interact with the NestJS greetings API: list, create, find, and
-            delete greetings. Protect mutations with{" "}
-            <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-              X-API-KEY
-            </code>
-            .
-          </p>
-        </header>
-
-        {flashMessage && (
+    <Card className="shadow-(--shadow-card)">
+      <CardHeader>
+        <Stack gap="sm">
+          <Badge
+            tone="brand"
+            variant="soft"
+            className="w-fit items-center gap-2"
+          >
+            <SparklesIcon className="h-4 w-4" />
+            Live playground
+          </Badge>
+          <Stack gap="xs">
+            <CardTitle>Greetings playground</CardTitle>
+            <CardDescription>
+              Interact with the NestJS greetings API: list, create, find and
+              delete greetings. Mutations require{" "}
+              <code className="rounded-sm bg-surface-strong px-1 py-0.5 text-xs font-mono text-foreground">
+                X-API-KEY
+              </code>
+              .
+            </CardDescription>
+          </Stack>
+        </Stack>
+      </CardHeader>
+      <CardContent className="gap-8">
+        {flashMessage ? (
           <div
-            className={`rounded-lg border px-4 py-3 text-sm ${
+            className={cn(
+              "flex items-center gap-2 rounded-(--radius-sm) border px-4 py-3 text-sm font-medium",
               flashMessage.type === "success"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/30 dark:text-emerald-200"
-                : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/60 dark:bg-rose-900/30 dark:text-rose-200"
-            }`}
-          >
-            {flashMessage.message}
-          </div>
-        )}
-
-        <section className="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-            Create greeting
-          </h3>
-          <form
-            className="flex flex-col gap-3"
-            onSubmit={handleCreate}
-            noValidate
-          >
-            <label className="flex flex-col gap-1 text-sm text-zinc-600 dark:text-zinc-300">
-              <span className="font-medium text-zinc-800 dark:text-zinc-100">
-                Message
-              </span>
-              <input
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-800"
-                placeholder="Say hello!"
-                value={content}
-                onChange={(event) => setContent(event.target.value)}
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm text-zinc-600 dark:text-zinc-300">
-              <span className="font-medium text-zinc-800 dark:text-zinc-100">
-                Country
-              </span>
-              <select
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-800"
-                value={countryCode}
-                onChange={(event) =>
-                  setCountryCode(
-                    event.target.value as CountryCode
-                  )
-                }
-              >
-                {COUNTRY_CODES.map((code) => (
-                  <option key={code} value={code}>
-                    {code}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {createError && (
-              <p className="text-sm text-rose-600 dark:text-rose-400">
-                {createError}
-              </p>
+                ? "border-success/40 bg-success/10 text-success"
+                : "border-danger/40 bg-danger/10 text-danger"
             )}
-
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-zinc-900"
-              disabled={createStatus === "submitting"}
-            >
-              {createStatus === "submitting" ? "Saving…" : "Create greeting"}
-            </button>
-          </form>
-        </section>
-
-        <section className="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-            Lookup by id
-          </h3>
-          <form
-            className="flex flex-col gap-3 sm:flex-row"
-            onSubmit={handleLookupSubmit}
           >
-            <input
-              className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-800"
-              placeholder="Enter greeting id"
-              value={lookupId}
-              onChange={(event) => setLookupId(event.target.value)}
-            />
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-zinc-900"
-              disabled={lookupStatus === "loading"}
-            >
-              {lookupStatus === "loading" ? "Searching…" : "Find greeting"}
-            </button>
-          </form>
-          {lookupError && (
-            <p className="text-sm text-rose-600 dark:text-rose-400">
-              {lookupError}
-            </p>
-          )}
-          {lookupResult && (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
-              <p>
-                <span className="font-medium">Message:</span>{" "}
-                {lookupResult.content}
-              </p>
-              <p>
-                <span className="font-medium">Country:</span>{" "}
-                {lookupResult.countryCode}
-              </p>
-              <p>
-                <span className="font-medium">Created:</span>{" "}
-                {new Date(lookupResult.createdAt).toLocaleString()}
-              </p>
-              <p className="wrap-break-word">
-                <span className="font-medium">Id:</span> {lookupResult.id}
-              </p>
-            </div>
-          )}
-        </section>
-
-        <section className="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-                All greetings
-              </h3>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Sorted by creation time. Use actions above to add or remove
-                greetings.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-zinc-600 dark:text-zinc-300">
-                Sort:
-              </label>
-              <select
-                className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                value={sortOrder}
-                onChange={(event) => {
-                  const next = event.target.value as SortOrder;
-                  setSortOrder(next);
-                }}
-              >
-                <option value="desc">Newest first</option>
-                <option value="asc">Oldest first</option>
-              </select>
-              <button
-                type="button"
-                onClick={() => refreshGreetings(sortOrder, { silent: true })}
-                className="rounded-md border border-zinc-300 px-3 py-1 text-sm text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:text-zinc-100"
-                disabled={isRefreshing}
-              >
-                {isRefreshing ? "Refreshing…" : "Refresh"}
-              </button>
-            </div>
+            {flashMessage.type === "success" ? (
+              <CheckIcon className="h-4 w-4" />
+            ) : (
+              <AlertTriangleIcon className="h-4 w-4" />
+            )}
+            <span>{flashMessage.message}</span>
           </div>
+        ) : null}
 
-          {listStatus === "loading" && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Loading greetings…
-            </p>
-          )}
-
-          {listStatus === "error" && listError && (
-            <p className="text-sm text-rose-600 dark:text-rose-400">
-              {listError}
-            </p>
-          )}
-
-          {listStatus === "ready" && !hasGreetings && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              No greetings yet. Create one above!
-            </p>
-          )}
-
-          {listStatus === "ready" && hasGreetings && (
-            <ul className="flex flex-col gap-3">
-              {greetings.map((greeting) => (
-                <li
-                  key={greeting.id}
-                  className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-4 text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-200"
-                >
-                  <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-                    <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-                      {greeting.content}
-                    </p>
-                    <button
-                      type="button"
-                      className="self-start rounded-md border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 transition hover:border-rose-400 hover:text-rose-700 dark:border-rose-900/60 dark:text-rose-300 dark:hover:border-rose-800 dark:hover:text-rose-200"
-                      onClick={() => handleDelete(greeting.id)}
-                      disabled={deletingId === greeting.id}
+        <Stack gap="lg">
+          <section>
+            <Stack gap="md">
+              <Stack gap="xs">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Create greeting
+                </h3>
+                <p className="text-sm text-muted">
+                  Publish a new message to the shared API.
+                </p>
+              </Stack>
+              <form onSubmit={handleCreate} noValidate>
+                <Stack gap="md">
+                  <Field
+                    label="Message"
+                    labelFor="create-message"
+                    required
+                    error={createError ?? undefined}
+                  >
+                    <Input
+                      id="create-message"
+                      placeholder="Say hello!"
+                      value={content}
+                      onChange={(event) => {
+                        setContent(event.target.value);
+                        if (createError) {
+                          setCreateError(null);
+                        }
+                      }}
+                      invalid={Boolean(createError)}
+                      disabled={createStatus === "submitting"}
+                    />
+                  </Field>
+                  <Field
+                    label="Country"
+                    labelFor="create-country"
+                    hint="Used to annotate the greeting."
+                  >
+                    <Select
+                      id="create-country"
+                      value={countryCode}
+                      onChange={(event) =>
+                        setCountryCode(event.target.value as CountryCode)
+                      }
+                      disabled={createStatus === "submitting"}
                     >
-                      {deletingId === greeting.id ? "Deleting…" : "Delete"}
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    <span>Id: {greeting.id}</span>
-                    <span>Country: {greeting.countryCode}</span>
-                    <span>
-                      Created: {new Date(greeting.createdAt).toLocaleString()}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                      {COUNTRY_CODES.map((code) => (
+                        <option key={code} value={code}>
+                          {code}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                  <Stack direction="row" gap="sm">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      disabled={createStatus === "submitting"}
+                    >
+                      {createStatus === "submitting"
+                        ? "Saving…"
+                        : "Create greeting"}
+                    </Button>
+                  </Stack>
+                </Stack>
+              </form>
+            </Stack>
+          </section>
 
-        <footer className="text-sm text-zinc-500 dark:text-zinc-400">
-          Update <code>NEXT_PUBLIC_API_URL</code> and{" "}
-          <code>NEXT_PUBLIC_API_KEY</code> in <code>.env.local</code> if your
-          backend lives elsewhere or uses a different key.
-        </footer>
-      </div>
-    </div>
+          <Divider />
+
+          <section>
+            <Stack gap="md">
+              <Stack gap="xs">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Lookup by id
+                </h3>
+                <p className="text-sm text-muted">
+                  Retrieve an existing greeting by its identifier.
+                </p>
+              </Stack>
+              <form
+                onSubmit={handleLookupSubmit}
+                className="flex flex-col gap-3 sm:flex-row sm:items-end"
+              >
+                <Field
+                  label="Greeting id"
+                  labelFor="lookup-id"
+                  className="w-full sm:flex-1"
+                  error={
+                    lookupStatus === "error" && lookupError
+                      ? lookupError
+                      : undefined
+                  }
+                >
+                  <Input
+                    id="lookup-id"
+                    placeholder="Enter greeting id"
+                    value={lookupId}
+                    onChange={(event) => {
+                      setLookupId(event.target.value);
+                      if (lookupError) {
+                        setLookupError(null);
+                        setLookupStatus("idle");
+                      }
+                    }}
+                    disabled={lookupStatus === "loading"}
+                    invalid={lookupStatus === "error" && Boolean(lookupError)}
+                  />
+                </Field>
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  disabled={lookupStatus === "loading"}
+                  leadingIcon={<SearchIcon className="h-4 w-4" />}
+                >
+                  {lookupStatus === "loading" ? "Searching…" : "Find greeting"}
+                </Button>
+              </form>
+              {lookupResult ? (
+                <Card className="border border-border/60 bg-surface-soft shadow-(--shadow-subtle)">
+                  <CardContent className="gap-3">
+                    <Stack gap="xs">
+                      <p className="text-base font-medium text-foreground">
+                        {lookupResult.content}
+                      </p>
+                      <p className="text-xs font-mono text-muted">
+                        ID: {lookupResult.id}
+                      </p>
+                    </Stack>
+                    <Stack direction="row" gap="sm" align="center">
+                      <Badge tone="brand" variant="soft">
+                        {lookupResult.countryCode}
+                      </Badge>
+                      <span className="text-sm text-muted">
+                        Created {formatTimestamp(lookupResult.createdAt)}
+                      </span>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </Stack>
+          </section>
+
+          <Divider />
+
+          <section>
+            <Stack gap="md">
+              <Stack
+                direction="row-wrap"
+                justify="between"
+                align="center"
+                gap="sm"
+              >
+                <Stack gap="xs">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    All greetings
+                  </h3>
+                  <p className="text-sm text-muted">
+                    Sorted by creation time. Use the tools above to add or
+                    remove records.
+                  </p>
+                </Stack>
+                <Stack
+                  direction="row"
+                  gap="sm"
+                  align="center"
+                  className="w-full sm:w-auto"
+                >
+                  <Field
+                    label="Sort order"
+                    labelFor="sort-order"
+                    className="w-full sm:w-44"
+                  >
+                    <Select
+                      id="sort-order"
+                      value={sortOrder}
+                      onChange={(event) =>
+                        setSortOrder(event.target.value as SortOrder)
+                      }
+                      disabled={listStatus === "loading"}
+                    >
+                      <option value="desc">Newest first</option>
+                      <option value="asc">Oldest first</option>
+                    </Select>
+                  </Field>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      refreshGreetings(sortOrder, { silent: true })
+                    }
+                    disabled={isRefreshing}
+                  >
+                    {isRefreshing ? "Refreshing…" : "Refresh"}
+                  </Button>
+                </Stack>
+              </Stack>
+
+              {listStatus === "loading" ? (
+                <Stack gap="sm">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-24 w-full rounded-md" />
+                  ))}
+                </Stack>
+              ) : null}
+
+              {listStatus === "error" && listError ? (
+                <HelperText tone="danger">{listError}</HelperText>
+              ) : null}
+
+              {listStatus === "ready" && !hasGreetings ? (
+                <Stack
+                  gap="sm"
+                  align="center"
+                  className="rounded-md border border-dashed border-border/60 bg-surface-soft px-6 py-10 text-center"
+                >
+                  <SparklesIcon className="h-6 w-6 text-primary" />
+                  <p className="text-sm text-muted">
+                    No greetings yet. Create one above to populate the list.
+                  </p>
+                </Stack>
+              ) : null}
+
+              {listStatus === "ready" && hasGreetings ? (
+                <Stack gap="sm">
+                  {greetings.map((greeting) => (
+                    <Card
+                      key={greeting.id}
+                      className="border border-border/60 shadow-(--shadow-subtle)"
+                    >
+                      <CardContent className="gap-4">
+                        <Stack direction="row" justify="between" align="start">
+                          <Stack gap="xs">
+                            <p className="text-base font-medium text-foreground">
+                              {greeting.content}
+                            </p>
+                            <p className="text-xs font-mono text-muted">
+                              ID: {greeting.id}
+                            </p>
+                          </Stack>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(greeting.id)}
+                            disabled={deletingId === greeting.id}
+                          >
+                            {deletingId === greeting.id
+                              ? "Deleting…"
+                              : "Delete"}
+                          </Button>
+                        </Stack>
+                        <Stack direction="row" gap="sm" align="center">
+                          <Badge tone="brand" variant="soft">
+                            {greeting.countryCode}
+                          </Badge>
+                          <span className="text-sm text-muted">
+                            Created {formatTimestamp(greeting.createdAt)}
+                          </span>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              ) : null}
+            </Stack>
+          </section>
+        </Stack>
+      </CardContent>
+      <CardFooter>
+        <p className="text-sm text-muted">
+          Update <code>BACKEND_ORIGIN</code> and{" "}
+          <code>NEXT_PUBLIC_API_KEY</code> in <code>.env</code> if your backend
+          lives elsewhere or uses a different key.
+        </p>
+      </CardFooter>
+    </Card>
   );
 }
