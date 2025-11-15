@@ -13,6 +13,7 @@
     "dev:backend": "pnpm --filter backend start:dev",
     "dev:all": "concurrently \"pnpm dev:frontend\" \"pnpm dev:backend\"",
     "lint": "pnpm --filter frontend lint && pnpm --filter backend lint",
+    "typecheck": "pnpm --filter backend typecheck && pnpm --filter frontend typecheck",
     "db:up": "docker compose -f apps/backend/docker-compose.mongodb.yml up -d",
     "db:down": "docker compose -f apps/backend/docker-compose.mongodb.yml down"
   },
