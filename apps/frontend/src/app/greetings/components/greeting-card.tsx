@@ -1,11 +1,7 @@
+import { Greeting } from "@fullstack-demo/contracts";
 import { Badge, Card, CardContent, Stack } from "@fullstack-demo/design-system";
 
-type Props = {
-  content: string;
-  id: string;
-  countryCode: string;
-  createdAt: Date;
-};
+type Props = Pick<Greeting, "content" | "id" | "countryCode" | "createdAt">;
 
 export default function GreetingCard({
   content,
@@ -13,10 +9,11 @@ export default function GreetingCard({
   countryCode,
   createdAt,
 }: Props) {
+  const createdAtDate = new Date(createdAt);
   const createdLabel = new Intl.DateTimeFormat("en", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(createdAt);
+  }).format(createdAtDate);
 
   return (
     <Card

@@ -1,15 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ListGreetingsDto } from './dto/list-greetings.dto';
 import { GreetingsController } from './greetings.controller';
 import { GreetingsService } from './greetings.service';
 
 describe('GreetingsController', () => {
   let controller: GreetingsController;
 
-  const mockGreetingsService = {
-    findAll: jest.fn(),
-    findById: jest.fn(),
-    create: jest.fn(),
-    delete: jest.fn(),
+  const mockGreetingsService: jest.Mocked<
+    Pick<GreetingsService, 'findAll' | 'findById' | 'create' | 'delete'>
+  > = {
+    findAll: jest.fn<
+      ReturnType<GreetingsService['findAll']>,
+      Parameters<GreetingsService['findAll']>
+    >(),
+    findById: jest.fn<
+      ReturnType<GreetingsService['findById']>,
+      Parameters<GreetingsService['findById']>
+    >(),
+    create: jest.fn<
+      ReturnType<GreetingsService['create']>,
+      Parameters<GreetingsService['create']>
+    >(),
+    delete: jest.fn<
+      ReturnType<GreetingsService['delete']>,
+      Parameters<GreetingsService['delete']>
+    >(),
   };
 
   beforeEach(async () => {
@@ -31,18 +46,29 @@ describe('GreetingsController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should return all greetings', async () => {
-    const result = [
-      {
-        id: '507f1f77bcf86cd799439011',
-        content: 'Hello',
-        countryCode: 'US',
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    mockGreetingsService.findAll.mockResolvedValue(result);
+  it('should forward pagination parameters to the service', async () => {
+    const query = Object.assign(new ListGreetingsDto(), {
+      limit: 5,
+      sort: 'desc' as const,
+      cursorId: '507f1f77bcf86cd799439011',
+    });
+    const serviceResponse = {
+      items: [],
+      limit: query.limit,
+      sort: query.sort,
+      nextAscCursorId: null,
+      nextDescCursorId: null,
+    };
+    mockGreetingsService.findAll.mockResolvedValue(serviceResponse);
 
-    await expect(controller.findAll('asc')).resolves.toBe(result);
-    expect(mockGreetingsService.findAll).toHaveBeenCalledWith('asc');
+    await expect(controller.findAll(query)).resolves.toBe(serviceResponse);
+
+    const callArgs = mockGreetingsService.findAll.mock.calls[0][0];
+
+    expect(callArgs).toEqual({
+      limit: query.limit,
+      sort: query.sort,
+      cursorId: query.cursorId,
+    });
   });
 });

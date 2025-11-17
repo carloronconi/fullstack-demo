@@ -2,6 +2,7 @@
 
 import {
   COUNTRY_CODES,
+  CursorPaginationResult,
   type CountryCode,
   type CreateGreetingPayload,
   type Greeting,
@@ -82,11 +83,10 @@ export function GreetingsDashboard() {
       if (!res.ok) {
         throw new Error(`Failed to load greetings (status ${res.status})`);
       }
-      const payload = (await res.json()) as Greeting[];
-      return payload.map((item) => ({
-        ...item,
-        createdAt: item.createdAt ?? new Date().toISOString(),
-      }));
+
+      return res.json().then((data: CursorPaginationResult<Greeting>) => {
+        return data.items;
+      });
     },
     [greetingsEndpoint]
   );

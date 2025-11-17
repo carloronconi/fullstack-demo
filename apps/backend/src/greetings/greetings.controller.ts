@@ -11,8 +11,13 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import {
+  type CursorPaginationResult,
+  type Greeting,
+} from '@fullstack-demo/contracts/greetings';
 import { GreetingsService } from './greetings.service';
 import { CreateGreetingDto } from './dto/create-greeting.dto';
+import { ListGreetingsDto } from './dto/list-greetings.dto';
 import { ApiKey } from './guards/api-key.guard';
 import { ParseObjectIdPipe } from './pipes/parse-object-id.pipe';
 
@@ -21,8 +26,20 @@ export class GreetingsController {
   constructor(private greetingsService: GreetingsService) {}
 
   @Get()
-  findAll(@Query('sort') sort: 'asc' | 'desc' = 'asc') {
-    return this.greetingsService.findAll(sort);
+  async findAll(
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    )
+    query: ListGreetingsDto,
+  ): Promise<CursorPaginationResult<Greeting>> {
+    return this.greetingsService.findAll({
+      limit: query.limit,
+      sort: query.sort,
+      cursorId: query.cursorId,
+    });
   }
 
   @Get(':id')

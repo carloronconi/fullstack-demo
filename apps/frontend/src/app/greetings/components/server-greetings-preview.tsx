@@ -1,12 +1,22 @@
-import { Greeting } from "@fullstack-demo/contracts";
+import { CursorPaginationResult, Greeting } from "@fullstack-demo/contracts";
+import { getBackendOrigin } from "@/lib/get-backend-origin";
 import { Badge, SparklesIcon, Stack } from "@fullstack-demo/design-system";
 import GreetingCard from "./greeting-card";
 
-type Props = {
-  greetings: Greeting[];
-};
+export default async function ServerGreetingsPreview() {
+  const backendOrigin = getBackendOrigin();
 
-export default function ServerGreetingsPreview({ greetings }: Props) {
+  const response = await fetch(`${backendOrigin}/greetings?sort=desc&limit=2`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load greetings");
+  }
+
+  const greetings: Greeting[] = await response
+    .json()
+    .then((data: CursorPaginationResult<Greeting>) => {
+      return data.items;
+    });
   const featuredGreetings = greetings.slice(0, 2);
   const hasFeaturedGreetings = featuredGreetings.length > 0;
 
